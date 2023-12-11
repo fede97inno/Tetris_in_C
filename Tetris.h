@@ -7,7 +7,6 @@
 #define POINTS_FOR_LINES 100
 #define POINTS_POS_X 256
 #define POINTS_POS_Y 10
-
+#define ENDLESS_POINT 1000
 
 int checkCollision(const int tetr_start_x, const int tetr_start_y, const int* tetr);
-//225

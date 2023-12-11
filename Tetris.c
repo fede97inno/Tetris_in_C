@@ -7,6 +7,9 @@
 void linesFall(int start_line_y);
 
 int points_counter = 0;
+int level = 1;              //WIP
+int highscore_for_next_level = 200;
+float wait_for_falling = 1.5;
 
 const int tetramino_L_0[] = 
 {
@@ -276,7 +279,15 @@ void deleteLine()
             memset(stage + offset, 0, (STAGE_WIDTH - 2) * sizeof(int)); //where to begin, what to write, for how much
             linesFall(i);
             points_counter += POINTS_FOR_LINES;
-            TraceLog(LOG_INFO, "Points : %d", points_counter);
+
+
+            if (points_counter <= ENDLESS_POINT && points_counter >= highscore_for_next_level)
+            {
+                wait_for_falling -= 0.25;
+                highscore_for_next_level += POINTS_FOR_LINES * 2;
+                level +=1;                                               //WIP
+                TraceLog(LOG_INFO, "FASTER!! next objective : %d, falling speed : %f", highscore_for_next_level, wait_for_falling);
+            }
         }
     }
 }
@@ -318,15 +329,23 @@ int main(int argc, char **argv, char  **environ)
     int current_tetr_rot = 0;
     int current_color = GetRandomValue(0, 7);
 
-    float wait_for_falling = 1; 
-    float fall_down_timer = 1;
+    float fall_down_timer = wait_for_falling;
 
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Title");
-    
+    InitAudioDevice();
+
     SetTargetFPS(60);
+
+    Music background_music = LoadMusicStream("Assets/Background_music.ogg");
+    Sound block_fall_sound = LoadSound("Assets/Block_fall_sound.wav");
+    background_music.looping = 1;
+
+    PlayMusicStream(background_music);
 
     while (!WindowShouldClose())
     {
+        UpdateMusicStream(background_music);
+
         fall_down_timer = fall_down_timer - GetFrameTime();
         
         if (IsKeyPressed(KEY_SPACE))
@@ -367,11 +386,12 @@ int main(int argc, char **argv, char  **environ)
                         if (tetr[tile_index] >= 1)
                         {
                             const int offset_stage = (i + current_tetr_y) * STAGE_WIDTH + (j + current_tetr_x);
-                            stage[offset_stage] = current_color + 1;            //save current color, previous 1, we need to change the ==1 to >= 1
+                            stage[offset_stage] = current_color + 1;            //save current color, previous 1, we need to change the ==1 to >= 1, 0 it's not a value that we can consider
                         }
                     }
                 }
-                
+
+                PlaySound(block_fall_sound);
                 deleteLine();
 
                 current_tetr_x = start_tetr_x;
@@ -401,7 +421,8 @@ int main(int argc, char **argv, char  **environ)
 
         BeginDrawing();
         
-        ClearBackground(RED);
+        Color background_color = {200, 200, 200, 255};
+        ClearBackground(background_color);
 
         drawTetraminos(current_tetr_x, current_tetr_y, tetramino_types[current_tetr_type][current_tetr_rot], stage_offset_x, stage_offset_y, color_types[current_color]);
         
@@ -412,7 +433,7 @@ int main(int argc, char **argv, char  **environ)
                 const int offset = j+i*STAGE_WIDTH;
                 const int color = stage[offset];
 
-                if (stage[j+i*STAGE_WIDTH] != 0)
+                if (stage[offset] != 0)
                 {
                     DrawRectangle(j * TILE_SIZE + stage_offset_x,i * TILE_SIZE + stage_offset_y, TILE_SIZE, TILE_SIZE, color_types[color - 1]);
                 }
@@ -422,9 +443,15 @@ int main(int argc, char **argv, char  **environ)
        }
 
         DrawText(TextFormat("Score : %d", points_counter), stage_offset_x, POINTS_POS_Y, 16, WHITE);    //text format for formatting string
+        DrawText(TextFormat("Level : %d", level), stage_offset_x, POINTS_POS_Y + 16, 16, WHITE);        //WIP
         
         EndDrawing();
     }
+
+    UnloadMusicStream(background_music);
+    UnloadSound(block_fall_sound);
+    CloseAudioDevice();
+    CloseWindow();
 
     return 0;
 }
