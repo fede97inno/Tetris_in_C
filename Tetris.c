@@ -9,7 +9,12 @@ void linesFall(int start_line_y);
 int points_counter = 0;
 int level = 1;              //WIP
 int highscore_for_next_level = 200;
-float wait_for_falling = 1.5;
+//float wait_for_falling = 1.5;
+
+int is_deleting = 0;
+float blink_time = STOP_FALLING_TIMER;
+float time_speed = 4.0;
+float text_deleting_pos_x = 0;
 
 const int tetramino_L_0[] = 
 {
@@ -283,11 +288,13 @@ void deleteLine()
 
             if (points_counter <= ENDLESS_POINT && points_counter >= highscore_for_next_level)
             {
-                wait_for_falling -= 0.25;
+                time_speed += 1;
                 highscore_for_next_level += POINTS_FOR_LINES * 2;
                 level +=1;                                               //WIP
-                TraceLog(LOG_INFO, "FASTER!! next objective : %d, falling speed : %f", highscore_for_next_level, wait_for_falling);
+                TraceLog(LOG_INFO, "FASTER!! next objective : %d, falling speed : %f", highscore_for_next_level, time_speed);
             }
+            is_deleting = i * TILE_SIZE;
+            text_deleting_pos_x = 0;
         }
     }
 }
@@ -329,7 +336,10 @@ int main(int argc, char **argv, char  **environ)
     int current_tetr_rot = 0;
     int current_color = GetRandomValue(0, 7);
 
+    float wait_for_falling = 1.5;
     float fall_down_timer = wait_for_falling;
+
+    //float text_deleting_pos_x = 0;
 
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Title");
     InitAudioDevice();
@@ -346,7 +356,7 @@ int main(int argc, char **argv, char  **environ)
     {
         UpdateMusicStream(background_music);
 
-        fall_down_timer = fall_down_timer - GetFrameTime();
+        fall_down_timer = fall_down_timer - GetFrameTime() * time_speed;
         
         if (IsKeyPressed(KEY_SPACE))
         {
@@ -444,6 +454,13 @@ int main(int argc, char **argv, char  **environ)
 
         DrawText(TextFormat("Score : %d", points_counter), stage_offset_x, POINTS_POS_Y, 16, WHITE);    //text format for formatting string
         DrawText(TextFormat("Level : %d", level), stage_offset_x, POINTS_POS_Y + 16, 16, WHITE);        //WIP
+        
+        if (is_deleting && text_deleting_pos_x <= STAGE_WIDTH * TILE_SIZE)
+        {
+            DrawRectangle(stage_offset_x + text_deleting_pos_x,is_deleting + stage_offset_y - TILE_SIZE, TILE_SIZE, TILE_SIZE, WHITE);
+            text_deleting_pos_x += GetFrameTime() * 250;
+            TraceLog(LOG_INFO, "%f - %d", text_deleting_pos_x, stage_offset_x + STAGE_WIDTH * TILE_SIZE);
+        }
         
         EndDrawing();
     }
