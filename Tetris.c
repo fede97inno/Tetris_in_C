@@ -4,6 +4,12 @@
 #include "Tetris.h"
 #include <stdio.h>
 
+typedef struct tetromino
+{
+    Color color;
+    int rotations[4][16];
+}tetromino;
+
 void linesFall(int start_line_y);
 
 int points_counter = 0;
@@ -11,6 +17,7 @@ int level = 1;              //WIP
 int highscore_for_next_level = 200;
 //float wait_for_falling = 1.5;
 
+int current_tetr_index;
 int is_deleting = 0;
 float blink_time = STOP_FALLING_TIMER;
 float time_speed = 4.0;
@@ -246,6 +253,20 @@ int stage[] = {                     //global var, array for the stage with walls
     1,1,1,1,1,1,1,1,1,1,1,1
     };
 
+tetromino* init_tetromino(tetromino *tetr, Color col, const int* rot_0, const int* rot_90,const int* rot_180,const int* rot_270)
+{
+    tetr->color = col;
+    for (int i = 0; i < 16; i++)
+    {
+        tetr->rotations[0][i] = rot_0[i];
+        tetr->rotations[1][i] = rot_90[i];
+        tetr->rotations[2][i] = rot_180[i];
+        tetr->rotations[3][i] = rot_270[i];
+    }
+
+    return NULL;
+}
+
 void drawTetraminos(int pos_x, int pos_y, const int *tetr_type, const int start_x_offset, const int start_y_offset, Color tetr_col)
 {
     for (int i = 0; i < TETRAMINO_SIZE; i++)
@@ -340,6 +361,8 @@ int main(int argc, char **argv, char  **environ)
     float fall_down_timer = wait_for_falling;
 
     //float text_deleting_pos_x = 0;
+    tetromino tetr_l;
+    init_tetromino(&tetr_l, YELLOW, tetramino_L_0, tetramino_L_90,tetramino_L_180,tetramino_L_270);
 
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Title");
     InitAudioDevice();
@@ -434,8 +457,8 @@ int main(int argc, char **argv, char  **environ)
         Color background_color = {200, 200, 200, 255};
         ClearBackground(background_color);
 
-        drawTetraminos(current_tetr_x, current_tetr_y, tetramino_types[current_tetr_type][current_tetr_rot], stage_offset_x, stage_offset_y, color_types[current_color]);
-        
+        //drawTetraminos(current_tetr_x, current_tetr_y, tetramino_types[current_tetr_type][current_tetr_rot], stage_offset_x, stage_offset_y, color_types[current_color]);
+        drawTetraminos(current_tetr_x, current_tetr_y, tetr_l.rotations[current_tetr_rot], stage_offset_x,stage_offset_y, tetr_l.color);
        for (int i = 0; i < STAGE_HEIGHT; i++)
        {
             for (int j = 0; j < STAGE_WIDTH; j++)
