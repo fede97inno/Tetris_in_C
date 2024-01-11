@@ -8,6 +8,6 @@
 #define POINTS_POS_X 256
 #define POINTS_POS_Y 10
 #define ENDLESS_POINT 1000
-#define STOP_FALLING_TIMER 2
+#define STOP_FALLING_TIMER 1
 
 int checkCollision(const int tetr_start_x, const int tetr_start_y, const int* tetr);
