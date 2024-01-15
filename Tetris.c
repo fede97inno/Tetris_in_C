@@ -360,6 +360,14 @@ int main(int argc, char **argv, char  **environ)
     time(&unix_time);
     
     SetRandomSeed(unix_time);
+
+    const int next_tetr_x = 25;
+    const int next_tetr_y = 11;
+
+    int next_tetr_type = GetRandomValue(0,6);
+    int next_tetr_rot = 0;
+    int next_tetr_color = GetRandomValue(0,6);
+
     int current_tetr_type = GetRandomValue(0,6);
     int current_tetr_rot = 0;
     int current_color = GetRandomValue(0, 7);
@@ -368,8 +376,8 @@ int main(int argc, char **argv, char  **environ)
     float fall_down_timer = wait_for_falling;
     float stop_falling_timer = STOP_FALLING_TIMER;
 
-    tetromino tetr_l;
-    init_tetromino(&tetr_l, color_types[0], tetramino_L_0, tetramino_L_90,tetramino_L_180,tetramino_L_270);
+    //tetromino tetr_l;
+    //init_tetromino(&tetr_l, color_types[0], tetramino_L_0, tetramino_L_90,tetramino_L_180,tetramino_L_270);
 
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Title");
     InitAudioDevice();
@@ -438,8 +446,12 @@ int main(int argc, char **argv, char  **environ)
 
                     current_tetr_x = start_tetr_x;
                     current_tetr_y = start_tetr_y;
-                    current_tetr_type = GetRandomValue(0, 6);
-                    current_color = GetRandomValue(0, 7);
+                    current_tetr_type = next_tetr_type;
+                    current_color = next_tetr_color;
+
+                    next_tetr_type = GetRandomValue(0,6);
+                    next_tetr_color = GetRandomValue(0,7);
+                    
                 }
 
             }
@@ -492,6 +504,7 @@ int main(int argc, char **argv, char  **environ)
 
         drawTetraminos(current_tetr_x, current_tetr_y, tetramino_types[current_tetr_type][current_tetr_rot], stage_offset_x, stage_offset_y, color_types[current_color]);
         //drawTetraminos(current_tetr_x, current_tetr_y, tetr_l.rotations[current_tetr_rot], stage_offset_x, stage_offset_y, tetr_l.color);WIP
+        
         for (int i = 0; i < STAGE_HEIGHT; i++)
         {
             for (int j = 0; j < STAGE_WIDTH; j++)
@@ -522,6 +535,10 @@ int main(int argc, char **argv, char  **environ)
             }
         }
         
+        DrawRectangleLines(next_tetr_x * TILE_SIZE - TILE_SIZE,next_tetr_y * TILE_SIZE - TILE_SIZE, 5*TILE_SIZE, 5*TILE_SIZE, BLACK);
+        drawTetraminos(next_tetr_x, next_tetr_y, tetramino_types[next_tetr_type][next_tetr_rot], 0, 0, color_types[next_tetr_color]);
+        DrawText("NEXT", next_tetr_x * TILE_SIZE, next_tetr_y * TILE_SIZE - TILE_SIZE, 16, BLACK);
+
         EndDrawing();
     }
 
