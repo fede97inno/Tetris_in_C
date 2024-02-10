@@ -1,14 +1,11 @@
-#include "raylib.h"
-#include <time.h>
-#include <string.h>
 #include "Tetris.h"
-#include <stdio.h>
 
 typedef struct tetromino
 {
     Color color;
     int rotations[4][16];
 }tetromino;
+
 
 void linesFall(int start_line_y);
 
@@ -25,9 +22,6 @@ int line_to_delete = 0;
 int lines_to_delete[4];
 int down_line = 0;
 
-const int game_state = 0;
-const int fading_state = 1;
-const int game_over = 2;
 int current_state;
 
 const int tetramino_L_0[] = 
@@ -314,10 +308,10 @@ void deleteLine()
             {
                 time_speed += 1;
                 highscore_for_next_level += POINTS_FOR_LINES * 2;
-                level +=1;                                               //WIP
+                level +=1;
                 TraceLog(LOG_INFO, "FASTER!! next objective : %d, falling speed : %f", highscore_for_next_level, time_speed);
             }
-            current_state = fading_state;
+            current_state = FADING_STATE;
             line_to_delete = i;
             lines_to_delete[down_line] = i;
             down_line++;
@@ -325,32 +319,14 @@ void deleteLine()
     }
 }
 
-void linesFall(int start_line_y)
+int main(int argc, char **argv)
 {
-    for (int i = start_line_y; i >= 0; i--)
-    {
-        for (int j = 1; j < STAGE_WIDTH - 1; j++)
-        {
-            const int offset = j + i * STAGE_WIDTH;
-            const int offset_below = (i + 1) * STAGE_WIDTH + j;
-
-            if (stage[offset_below] == 0 && stage[offset] > 0)
-            {
-                stage[offset_below] = stage[offset];
-                stage[offset] = 0;
-            }
-        }
-    }
-}
-
-int main(int argc, char **argv, char  **environ)
-{
-    current_state = game_state;
+    current_state = MENU_STATE;
 
     const int stage_offset_x = WINDOW_WIDTH / 2 - STAGE_WIDTH / 2 * TILE_SIZE;          //better to use /2 when using int cause are faster than using *0.5, float operation are slower
     const int stage_offset_y = WINDOW_HEIGHT / 2 - STAGE_HEIGHT / 2 * TILE_SIZE;
 
-    const int start_tetr_x = STAGE_WIDTH / 2;                                                       //we want this in cells
+    const int start_tetr_x = STAGE_WIDTH / 2;                                           //we want this in cells
     const int start_tetr_y = 0; 
 
     int current_tetr_x = start_tetr_x;
@@ -379,23 +355,23 @@ int main(int argc, char **argv, char  **environ)
     //tetromino tetr_l;
     //init_tetromino(&tetr_l, color_types[0], tetramino_L_0, tetramino_L_90,tetramino_L_180,tetramino_L_270);
 
-    InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Title");
-    InitAudioDevice();
+    environment_init("Tetris");
 
-    SetTargetFPS(60);
+    Music* background_music = environment_init_music("Assets/Background_music.ogg", true);
+    Sound* block_fall_sound = environment_init_sound("Assets/Block_fall_sound.wav");
 
-    Music background_music = LoadMusicStream("Assets/Background_music.ogg");
-    Sound block_fall_sound = LoadSound("Assets/Block_fall_sound.wav");
-    background_music.looping = 1;
-
-    PlayMusicStream(background_music);
+    PlayMusicStream(*background_music);
 
     while (!WindowShouldClose())
     {
-        UpdateMusicStream(background_music);
+        UpdateMusicStream(*background_music);
 
-        if (current_state == game_state) 
+        switch(current_state)
         {
+            case MENU_STATE:
+            if(IsKeyPressed(KEY_SPACE)) current_state = GAME_STATE;
+            break;
+            case GAME_STATE:
             fall_down_timer = fall_down_timer - GetFrameTime() * time_speed;
             
             if (IsKeyPressed(KEY_SPACE))
@@ -441,7 +417,7 @@ int main(int argc, char **argv, char  **environ)
                         }
                     }
 
-                    PlaySound(block_fall_sound);
+                    PlaySound(*block_fall_sound);
                     deleteLine();
 
                     current_tetr_x = start_tetr_x;
@@ -451,9 +427,7 @@ int main(int argc, char **argv, char  **environ)
 
                     next_tetr_type = GetRandomValue(0,6);
                     next_tetr_color = GetRandomValue(0,7);
-                    
                 }
-
             }
 
             if (IsKeyPressed(KEY_D))
@@ -471,15 +445,14 @@ int main(int argc, char **argv, char  **environ)
                     current_tetr_x--;
                 }
             }
-        }
-        else if(current_state == fading_state)
-        {
+            break;
+            case FADING_STATE:
             stop_falling_timer = stop_falling_timer - GetFrameTime();
 
             if (stop_falling_timer < 0)
             {
                 //const int offset = line_to_delete * STAGE_WIDTH + 1;
-                current_state = game_state;
+                current_state = GAME_STATE;
                 stop_falling_timer = STOP_FALLING_TIMER;
                 for (int i = 0; i < down_line; i++)
                 {
@@ -495,15 +468,16 @@ int main(int argc, char **argv, char  **environ)
 
                 down_line = 0;
             }
+            break;
         }
         
         BeginDrawing();
         
-        Color background_color = {200, 200, 200, 255};
+        const Color background_color = {200, 200, 200, 255};
         ClearBackground(background_color);
 
         drawTetraminos(current_tetr_x, current_tetr_y, tetramino_types[current_tetr_type][current_tetr_rot], stage_offset_x, stage_offset_y, color_types[current_color]);
-        //drawTetraminos(current_tetr_x, current_tetr_y, tetr_l.rotations[current_tetr_rot], stage_offset_x, stage_offset_y, tetr_l.color);WIP
+        //drawTetraminos(current_tetr_x, current_tetr_y, tetr_l.rotations[current_tetr_rot], stage_offset_x, stage_offset_y, tetr_l.color);
         
         for (int i = 0; i < STAGE_HEIGHT; i++)
         {
@@ -524,7 +498,7 @@ int main(int argc, char **argv, char  **environ)
         DrawText(TextFormat("Score : %d", points_counter), stage_offset_x, POINTS_POS_Y, 16, WHITE);    //text format for formatting string
         DrawText(TextFormat("Level : %d", level), stage_offset_x, POINTS_POS_Y + 16, 16, WHITE);        //WIP
         
-        if (current_state == fading_state)
+        if (current_state == FADING_STATE)
         {
             for (int i = 0; i < down_line; i++)
             {
@@ -535,6 +509,8 @@ int main(int argc, char **argv, char  **environ)
             }
         }
         
+        if (current_state == MENU_STATE) DrawText("PRESS SPACE TO BEGIN!",20, 258,36, WHITE);
+
         DrawRectangleLines(next_tetr_x * TILE_SIZE - TILE_SIZE,next_tetr_y * TILE_SIZE - TILE_SIZE, 5*TILE_SIZE, 5*TILE_SIZE, BLACK);
         drawTetraminos(next_tetr_x, next_tetr_y, tetramino_types[next_tetr_type][next_tetr_rot], 0, 0, color_types[next_tetr_color]);
         DrawText("NEXT", next_tetr_x * TILE_SIZE, next_tetr_y * TILE_SIZE - TILE_SIZE, 16, BLACK);
@@ -542,10 +518,10 @@ int main(int argc, char **argv, char  **environ)
         EndDrawing();
     }
 
-    UnloadMusicStream(background_music);
-    UnloadSound(block_fall_sound);
-    CloseAudioDevice();
-    CloseWindow();
+    environment_unload_music(*background_music);
+    environment_unload_sound(*block_fall_sound);
+    environment_close();
+
 
     return 0;
 }
