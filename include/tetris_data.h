@@ -1,0 +1,10 @@
+#ifndef TETRIS_DATA_H
+#define TETRIS_DATA_H
+
+#define STAGE_WIDTH 12
+#define STAGE_HEIGHT 22
+#define TETROMINO_SIZE 4
+
+
+
+#endif //TETRIS_DATA_H

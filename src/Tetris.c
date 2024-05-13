@@ -1,19 +1,11 @@
 #include "Tetris.h"
 
-typedef struct tetromino
-{
-    Color color;
-    int rotations[4][16];
-}tetromino;
-
-
 void linesFall(int start_line_y);
 
 int points_counter = 0;
 int level = 1;              
 int highscore_for_next_level = 200;
 
-int current_tetr_index;
 float blink_time = STOP_FALLING_TIMER;
 float time_speed = 4.0;
 float text_deleting_pos_x = 1;
@@ -24,28 +16,28 @@ int down_line = 0;
 
 int current_state;
 
-const int tetramino_L_0[] = 
+const int tetromino_L_0[] = 
 {
     0,1,0,0,
     0,1,0,0,
     0,1,1,0,
     0,0,0,0
 };
-const int tetramino_L_90[] = 
+const int tetromino_L_90[] = 
 {
     0,0,0,0,
     1,1,1,0,
     1,0,0,0,
     0,0,0,0
 };
-const int tetramino_L_180[] = 
+const int tetromino_L_180[] = 
 {
     1,1,0,0,
     0,1,0,0,
     0,1,0,0,
     0,0,0,0
 };
-const int tetramino_L_270[] = 
+const int tetromino_L_270[] = 
 {
     0,0,1,0,
     1,1,1,0,
@@ -53,14 +45,14 @@ const int tetramino_L_270[] =
     0,0,0,0
 };
 
-const int tetramino_J_0[] = 
+const int tetromino_J_0[] = 
 {
     0,1,0,0,
     0,1,0,0,
     1,1,0,0,
     0,0,0,0
 };
-const int tetramino_J_90[] = 
+const int tetromino_J_90[] = 
 {
     1,0,0,0,
     1,1,1,0,
@@ -68,21 +60,21 @@ const int tetramino_J_90[] =
     0,0,0,0
 };
 
-const int tetramino_J_180[] = 
+const int tetromino_J_180[] = 
 {
     0,1,1,0,
     0,1,0,0,
     0,1,0,0,
     0,0,0,0
 };
-const int tetramino_J_270[] = 
+const int tetromino_J_270[] = 
 {
     0,0,0,0,
     1,1,1,0,
     0,0,1,0,
     0,0,0,0
 };
-const int tetramino_O_0[] = 
+const int tetromino_O_0[] = 
 {
     1,1,0,0,
     1,1,0,0,
@@ -90,35 +82,35 @@ const int tetramino_O_0[] =
     0,0,0,0
 };
 
-const int tetramino_S_0[] = 
+const int tetromino_S_0[] = 
 {
     0,0,0,0,
     0,1,1,0,
     1,1,0,0,
     0,0,0,0
 };
-const int tetramino_S_90[] = 
+const int tetromino_S_90[] = 
 {
     0,0,0,0,
     0,1,0,0,
     0,1,1,0,
     0,0,1,0
 };
-const int tetramino_S_180[] = 
+const int tetromino_S_180[] = 
 {
     0,0,0,0,
     0,0,0,0,
     0,1,1,0,
     1,1,0,0,
 };
-const int tetramino_S_270[] = 
+const int tetromino_S_270[] = 
 {
     0,0,0,0,
     1,0,0,0,
     1,1,0,0,
     0,1,0,0,
 };
-const int tetramino_Z_0[] =
+const int tetromino_Z_0[] =
 {
     0,0,0,0,
     1,1,0,0,
@@ -126,7 +118,7 @@ const int tetramino_Z_0[] =
     0,0,0,0,
 };
 
-const int tetramino_Z_90[] =
+const int tetromino_Z_90[] =
 {
     0,1,0,0,
     0,1,1,0,
@@ -134,7 +126,7 @@ const int tetramino_Z_90[] =
     0,0,0,0,
 };
 
-const int tetramino_Z_180[] =
+const int tetromino_Z_180[] =
 {
     0,0,0,0,
     0,1,1,0,
@@ -142,63 +134,63 @@ const int tetramino_Z_180[] =
     0,0,0,0,
 };
 
-const int tetramino_Z_270[] =
+const int tetromino_Z_270[] =
 {
     1,0,0,0,
     1,1,0,0,
     0,1,0,0,
     0,0,0,0,
 };
-const int tetramino_I_0[] = 
+const int tetromino_I_0[] = 
 {
     0,0,0,0,
     1,1,1,1,
     0,0,0,0,
     0,0,0,0
 };
-const int tetramino_I_90[] = 
+const int tetromino_I_90[] = 
 {
     0,1,0,0,
     0,1,0,0,
     0,1,0,0,
     0,1,0,0
 };
-const int tetramino_I_180[] = 
+const int tetromino_I_180[] = 
 {
     0,0,0,0,
     1,1,1,1,
     0,0,0,0,
     0,0,0,0
 };
-const int tetramino_I_270[] = 
+const int tetromino_I_270[] = 
 {
     0,1,0,0,
     0,1,0,0,
     0,1,0,0,
     0,1,0,0
 };
-const int tetramino_T_0[] = 
+const int tetromino_T_0[] = 
 {
     0,0,0,0,
     1,1,1,0,
     0,1,0,0,
     0,0,0,0,
 };
-const int tetramino_T_90[] = 
+const int tetromino_T_90[] = 
 {
     0,1,0,0,
     1,1,0,0,
     0,1,0,0,
     0,0,0,0,
 };
-const int tetramino_T_180[] = 
+const int tetromino_T_180[] = 
 {
     0,1,0,0,
     1,1,1,0,
     0,0,0,0,
     0,0,0,0,
 };
-const int tetramino_T_270[] = 
+const int tetromino_T_270[] = 
 {
     0,1,0,0,
     0,1,1,0,
@@ -206,7 +198,7 @@ const int tetramino_T_270[] =
     0,0,0,0,
 };
 
-const Color color_types[8] =
+const Color color_types[9] =
 {
     {255,255,0,255},        //YELLOW
     {0,0,255,255},          //BLUE
@@ -215,18 +207,19 @@ const Color color_types[8] =
     {204,0,77,255},         //RED
     {255,0,255,255},        //MAGENTA
     {0,255,255,255},        //CYAN
-    {255,165,0,255}         //ORANGE
+    {255,165,0,255},        //ORANGE
+    {200,200,200,255}       //BACKGROUND
 };
 
-const int *tetramino_types[7][4] =
+const int *tetromino_types[7][4] =
 {
-    {tetramino_I_0, tetramino_I_90, tetramino_I_180,tetramino_I_270},
-    {tetramino_J_0, tetramino_J_90, tetramino_J_180, tetramino_J_270},
-    {tetramino_Z_0, tetramino_Z_90, tetramino_Z_180,tetramino_Z_270},
-    {tetramino_S_0, tetramino_S_90, tetramino_S_180,tetramino_S_270},
-    {tetramino_O_0, tetramino_O_0, tetramino_O_0,tetramino_O_0},
-    {tetramino_L_0, tetramino_L_90, tetramino_L_180,tetramino_L_270},
-    {tetramino_T_0, tetramino_T_90, tetramino_T_180,tetramino_T_270},
+    {tetromino_I_0, tetromino_I_90, tetromino_I_180,tetromino_I_270},
+    {tetromino_J_0, tetromino_J_90, tetromino_J_180, tetromino_J_270},
+    {tetromino_Z_0, tetromino_Z_90, tetromino_Z_180,tetromino_Z_270},
+    {tetromino_S_0, tetromino_S_90, tetromino_S_180,tetromino_S_270},
+    {tetromino_O_0, tetromino_O_0, tetromino_O_0,tetromino_O_0},
+    {tetromino_L_0, tetromino_L_90, tetromino_L_180,tetromino_L_270},
+    {tetromino_T_0, tetromino_T_90, tetromino_T_180,tetromino_T_270},
 };
 
 int stage[] = {                     //global var, array for the stage with walls
@@ -254,33 +247,18 @@ int stage[] = {                     //global var, array for the stage with walls
     1,1,1,1,1,1,1,1,1,1,1,1
     };
 
-tetromino* init_tetromino(tetromino *tetr, Color col, const int* rot_0, const int* rot_90,const int* rot_180,const int* rot_270)
+void drawTetromino(const tetromino* tetr, const int stage_x_offset, const int stage_y_offset)
 {
-    tetr->color = col;
-    for (int i = 0; i < 16; i++)
+    for (int i = 0; i < TETROMINO_SIZE; i++)
     {
-        tetr->rotations[0][i] = rot_0[i];
-        tetr->rotations[1][i] = rot_90[i];
-        tetr->rotations[2][i] = rot_180[i];
-        tetr->rotations[3][i] = rot_270[i];
-    }
-
-    return NULL;
-}
-
-void drawTetraminos(int pos_x, int pos_y, const int *tetr_type, const int start_x_offset, const int start_y_offset, Color tetr_col)
-{
-    for (int i = 0; i < TETRAMINO_SIZE; i++)
-    {
-        for (int j = 0; j < TETRAMINO_SIZE; j++)
+        for (int j = 0; j < TETROMINO_SIZE; j++)
         {
-            if(tetr_type[j+i*TETRAMINO_SIZE] >= 1)
+            if((tetromino_types[tetr->type][tetr->rotation])[j+i*TETROMINO_SIZE] >= 1)
             {
-                    DrawRectangle((pos_x + j )* TILE_SIZE + start_x_offset,(pos_y + i) * TILE_SIZE + start_y_offset, TILE_SIZE, TILE_SIZE, tetr_col);
+                    DrawRectangle((tetr->position.x + j )* TILE_SIZE + stage_x_offset,(tetr->position.y + i) * TILE_SIZE + stage_y_offset, TILE_SIZE, TILE_SIZE, color_types[tetr->color]);
             }
         }
     }
-    
 }
 
 void deleteLine()
@@ -319,141 +297,89 @@ void deleteLine()
     }
 }
 
-int main(int argc, char **argv)
+void update(tetromino* current_tetr, tetromino* next_tetr, float* fall_down_timer, Sound* block_fall_sound)
 {
-    current_state = MENU_STATE;
-
-    const int stage_offset_x = WINDOW_WIDTH / 2 - STAGE_WIDTH / 2 * TILE_SIZE;          //better to use /2 when using int cause are faster than using *0.5, float operation are slower
-    const int stage_offset_y = WINDOW_HEIGHT / 2 - STAGE_HEIGHT / 2 * TILE_SIZE;
-
-    const int start_tetr_x = STAGE_WIDTH / 2;                                           //we want this in cells
-    const int start_tetr_y = 0; 
-
-    int current_tetr_x = start_tetr_x;
-    int current_tetr_y = start_tetr_y;
-
-    time_t unix_time;
-    time(&unix_time);
-    
-    SetRandomSeed(unix_time);
-
-    const int next_tetr_x = 25;
-    const int next_tetr_y = 11;
-
-    int next_tetr_type = GetRandomValue(0,6);
-    int next_tetr_rot = 0;
-    int next_tetr_color = GetRandomValue(0,6);
-
-    int current_tetr_type = GetRandomValue(0,6);
-    int current_tetr_rot = 0;
-    int current_color = GetRandomValue(0, 7);
-
-    float wait_for_falling = 1.5;
-    float fall_down_timer = wait_for_falling;
-    float stop_falling_timer = STOP_FALLING_TIMER;
-
-    //tetromino tetr_l;
-    //init_tetromino(&tetr_l, color_types[0], tetramino_L_0, tetramino_L_90,tetramino_L_180,tetramino_L_270);
-
-    environment_init("Tetris");
-
-    Music* background_music = environment_init_music("Assets/Background_music.ogg", true);
-    Sound* block_fall_sound = environment_init_sound("Assets/Block_fall_sound.wav");
-
-    PlayMusicStream(*background_music);
-
-    while (!WindowShouldClose())
+    *fall_down_timer = (*fall_down_timer) - GetFrameTime() * time_speed;
+    if (IsKeyPressed(KEY_SPACE))
     {
-        UpdateMusicStream(*background_music);
+        const int last_rot = current_tetr->rotation;
 
-        switch(current_state)
+        current_tetr->rotation++;
+        if (current_tetr->rotation > 3)
         {
-            case MENU_STATE:
-            if(IsKeyPressed(KEY_SPACE)) current_state = GAME_STATE;
-            break;
-            case GAME_STATE:
-            fall_down_timer = fall_down_timer - GetFrameTime() * time_speed;
-            
-            if (IsKeyPressed(KEY_SPACE))
-            {
-                const int last_rot = current_tetr_rot;
-
-                current_tetr_rot++;
-                if (current_tetr_rot > 3)
-                {
-                    current_tetr_rot = 0;
-                }
+            current_tetr->rotation = 0;
+        }
                 
-                if (checkCollision(current_tetr_x, current_tetr_y, tetramino_types[current_tetr_type][current_tetr_rot]))
-                {
-                    current_tetr_rot = last_rot;
-                }
-                
-            }
+        if (checkCollision(current_tetr->position.x, current_tetr->position.y, tetromino_types[current_tetr->type][current_tetr->rotation]))
+        {
+            current_tetr->rotation = last_rot;
+        }
+    }
             
-            if (fall_down_timer < 0 || IsKeyPressed(KEY_S))
-            {
-                const int next_offset_y_position = current_tetr_x + (current_tetr_y + 1) * STAGE_WIDTH;
+    if (*fall_down_timer < 0 || IsKeyPressed(KEY_S))
+    {
+        const int next_offset_y_position = current_tetr->position.x + (current_tetr->position.y + 1) * STAGE_WIDTH;
 
-                if (!checkCollision(current_tetr_x, current_tetr_y + 1, tetramino_types[current_tetr_type][current_tetr_rot]))
+        if (!checkCollision(current_tetr->position.x, current_tetr->position.y + 1, tetromino_types[current_tetr->type][current_tetr->rotation]))
+        {
+            current_tetr->position.y++;
+           *fall_down_timer = WAIT_FOR_FALLING;
+        }
+        else
+        {
+            for (int i = 0; i < TETROMINO_SIZE; i++)
+            {
+                for (int j = 0; j < TETROMINO_SIZE; j++)
                 {
-                    current_tetr_y++;
-                    fall_down_timer = wait_for_falling;
-                }
-                else
-                {
-                    for (int i = 0; i < TETRAMINO_SIZE; i++)
+                    const int tile_index = i * TETROMINO_SIZE + j;
+                    const int* tetr = tetromino_types[current_tetr->type][current_tetr->rotation];
+                        
+                    if (tetr[tile_index] >= 1)
                     {
-                        for (int j = 0; j < TETRAMINO_SIZE; j++)
-                        {
-                            const int tile_index = i * TETRAMINO_SIZE + j;
-                            const int* tetr = tetramino_types[current_tetr_type][current_tetr_rot];
-                            
-                            if (tetr[tile_index] >= 1)
-                            {
-                                const int offset_stage = (i + current_tetr_y) * STAGE_WIDTH + (j + current_tetr_x);
-                                stage[offset_stage] = current_color + 1;            //save current color, previous 1, we need to change the ==1 to >= 1, 0 it's not a value that we can consider
-                            }
-                        }
+                        const int offset_stage = (i + current_tetr->position.y) * STAGE_WIDTH + (j + current_tetr->position.x);
+                        stage[offset_stage] = current_tetr->color + 1;            //save current color, previous 1, we need to change the ==1 to >= 1, 0 it's not a value that we can consider
                     }
-
-                    PlaySound(*block_fall_sound);
-                    deleteLine();
-
-                    current_tetr_x = start_tetr_x;
-                    current_tetr_y = start_tetr_y;
-                    current_tetr_type = next_tetr_type;
-                    current_color = next_tetr_color;
-
-                    next_tetr_type = GetRandomValue(0,6);
-                    next_tetr_color = GetRandomValue(0,7);
                 }
             }
 
-            if (IsKeyPressed(KEY_D))
-            {
-                if (!checkCollision(current_tetr_x + 1, current_tetr_y, /*tetr_l.rotations[current_tetr_rot]*/tetramino_types[current_tetr_type][current_tetr_rot]))       //the wall "1" prevent overflow
-                {
-                    current_tetr_x++;
-                }
-            }
+            PlaySound(*block_fall_sound);
+            deleteLine();
 
-            if (IsKeyPressed(KEY_A))
-            {
-                if (!checkCollision(current_tetr_x - 1, current_tetr_y, tetramino_types[current_tetr_type][current_tetr_rot]))       //the wall "1" prevent overflow
-                {
-                    current_tetr_x--;
-                }
-            }
-            break;
-            case FADING_STATE:
-            stop_falling_timer = stop_falling_timer - GetFrameTime();
+            current_tetr->position.x = STAGE_WIDTH / 2;
+            current_tetr->position.y = 0;
+            current_tetr->type = next_tetr->type;
+            current_tetr->color = next_tetr->color;
 
-            if (stop_falling_timer < 0)
+            next_tetr->type = GetRandomValue(0,6);
+            next_tetr->color = GetRandomValue(0,7);
+        }
+    }
+
+    if (IsKeyPressed(KEY_D))
+    {
+        if (!checkCollision(current_tetr->position.x + 1, current_tetr->position.y, tetromino_types[current_tetr->type][current_tetr->rotation]))       //the wall "1" prevent overflow
+        {
+            current_tetr->position.x++;
+        }
+    }
+
+    if (IsKeyPressed(KEY_A))
+    {
+        if (!checkCollision(current_tetr->position.x - 1, current_tetr->position.y, tetromino_types[current_tetr->type][current_tetr->rotation]))       //the wall "1" prevent overflow
+        {
+            current_tetr->position.x--;
+        }
+    }
+}
+
+void fading(float* stop_falling_timer)
+{
+    *stop_falling_timer = *stop_falling_timer - GetFrameTime();
+
+            if (*stop_falling_timer < 0)
             {
-                //const int offset = line_to_delete * STAGE_WIDTH + 1;
                 current_state = GAME_STATE;
-                stop_falling_timer = STOP_FALLING_TIMER;
+                *stop_falling_timer = STOP_FALLING_TIMER;
                 for (int i = 0; i < down_line; i++)
                 {
                     const int offset = lines_to_delete[i] * STAGE_WIDTH + 1;
@@ -468,17 +394,15 @@ int main(int argc, char **argv)
 
                 down_line = 0;
             }
-            break;
-        }
-        
+}
+
+void draw(const tetromino* current_tetr,const tetromino* next_tetr,const int stage_offset_x, const int stage_offset_y, float stop_falling_timer)
+{
         BeginDrawing();
         
-        const Color background_color = {200, 200, 200, 255};
-        ClearBackground(background_color);
+        ClearBackground(color_types[COLOR_BACKGROUND]);
 
-        drawTetraminos(current_tetr_x, current_tetr_y, tetramino_types[current_tetr_type][current_tetr_rot], stage_offset_x, stage_offset_y, color_types[current_color]);
-        //drawTetraminos(current_tetr_x, current_tetr_y, tetr_l.rotations[current_tetr_rot], stage_offset_x, stage_offset_y, tetr_l.color);
-        
+        drawTetromino(current_tetr, stage_offset_x, stage_offset_y);
         for (int i = 0; i < STAGE_HEIGHT; i++)
         {
             for (int j = 0; j < STAGE_WIDTH; j++)
@@ -511,17 +435,74 @@ int main(int argc, char **argv)
         
         if (current_state == MENU_STATE) DrawText("PRESS SPACE TO BEGIN!",20, 258,36, WHITE);
 
-        DrawRectangleLines(next_tetr_x * TILE_SIZE - TILE_SIZE,next_tetr_y * TILE_SIZE - TILE_SIZE, 5*TILE_SIZE, 5*TILE_SIZE, BLACK);
-        drawTetraminos(next_tetr_x, next_tetr_y, tetramino_types[next_tetr_type][next_tetr_rot], 0, 0, color_types[next_tetr_color]);
-        DrawText("NEXT", next_tetr_x * TILE_SIZE, next_tetr_y * TILE_SIZE - TILE_SIZE, 16, BLACK);
+        DrawRectangleLines(next_tetr->position.x * TILE_SIZE - TILE_SIZE,next_tetr->position.y * TILE_SIZE - TILE_SIZE, 5*TILE_SIZE, 5*TILE_SIZE, BLACK);
+        drawTetromino(next_tetr, 0, 0);
+        DrawText("NEXT", next_tetr->position.x * TILE_SIZE, next_tetr->position.y * TILE_SIZE - TILE_SIZE, 16, BLACK);
 
         EndDrawing();
+}
+
+int main(int argc, char **argv)
+{
+    current_state = MENU_STATE;
+
+    const int stage_offset_x = WINDOW_WIDTH / 2 - STAGE_WIDTH / 2 * TILE_SIZE;          //better to use /2 when using int cause are faster than using *0.5, float operation are slower
+    const int stage_offset_y = WINDOW_HEIGHT / 2 - STAGE_HEIGHT / 2 * TILE_SIZE;
+
+    time_t unix_time;
+    time(&unix_time);
+    
+    SetRandomSeed(unix_time);
+
+    tetromino current_tetr;
+    current_tetr.position.x = STAGE_WIDTH / 2; 
+    current_tetr.position.y = 0; 
+    current_tetr.rotation = 0;
+    current_tetr.type = GetRandomValue(0,6);
+    current_tetr.color = GetRandomValue(0,6);
+    
+    tetromino next_tetr;
+    next_tetr.position.x = 25;
+    next_tetr.position.y = 11;
+    next_tetr.rotation = 0;
+    next_tetr.type = GetRandomValue(0,6);
+    next_tetr.color = GetRandomValue(0,6);
+
+    float fall_down_timer = WAIT_FOR_FALLING;
+    float stop_falling_timer = STOP_FALLING_TIMER;
+
+    environment_init("Tetris");
+
+    Music* background_music = environment_init_music("Assets/Background_music.ogg", true);
+    Sound* block_fall_sound = environment_init_sound("Assets/Block_fall_sound.wav");
+
+    PlayMusicStream(*background_music);
+
+    while (!WindowShouldClose())
+    {
+        UpdateMusicStream(*background_music);
+
+        switch(current_state)
+        {
+            case MENU_STATE:
+            if(IsKeyPressed(KEY_SPACE)) current_state = GAME_STATE;
+            break;
+
+            case GAME_STATE:
+            update(&current_tetr, &next_tetr, &fall_down_timer, block_fall_sound);
+            break;
+
+            case FADING_STATE:
+            fading(&stop_falling_timer);
+            break;
+        }
+        
+        draw(&current_tetr, &next_tetr, stage_offset_x, stage_offset_y, stop_falling_timer);
     }
 
     environment_unload_music(*background_music);
     environment_unload_sound(*block_fall_sound);
     environment_close();
-
 
     return 0;
 }

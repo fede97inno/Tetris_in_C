@@ -4,11 +4,11 @@ extern int stage[];         //if something arrive from outside
 
 int checkCollision(const int tetr_start_x, const int tetr_start_y, const int* tetr)
 {
-    for (int i = 0; i < TETRAMINO_SIZE; i++)
+    for (int i = 0; i < TETROMINO_SIZE; i++)
     {
-        for (int j = 0; j < TETRAMINO_SIZE; j++)
+        for (int j = 0; j < TETROMINO_SIZE; j++)
         {
-            const int offset = i * TETRAMINO_SIZE + j;
+            const int offset = i * TETROMINO_SIZE + j;
 
             if (tetr[offset] >= 1)
             {
